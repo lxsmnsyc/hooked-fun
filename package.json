@@ -1,0 +1,35 @@
+{
+  "name": "hooked-fun",
+  "version": "0.1.0",
+  "license": "MIT",
+  "author": "Alexis Munsayac",
+  "main": "dist/index.js",
+  "module": "dist/test.esm.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "start": "tsdx watch",
+    "build": "tsdx build",
+    "test": "tsdx test"
+  },
+  "peerDependencies": {},
+  "devDependencies": {
+    "@types/jest": "^24.0.23",
+    "@typescript-eslint/eslint-plugin": "^2.8.0",
+    "@typescript-eslint/parser": "^2.8.0",
+    "eslint": "^6.7.1",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "tsdx": "^0.11.0",
+    "tslib": "^1.10.0",
+    "typescript": "^3.7.2"
+  },
+  "repository": {
+    "url": "https://github.com/LXSMNSYC/hooked-fun.git"
+  },
+  "homepage": "https://github.com/LXSMNSYC/hooked-fun",
+  "bugs": {
+    "url": "https://github.com/LXSMNSYC/hooked-fun/issues"
+  }
+}
