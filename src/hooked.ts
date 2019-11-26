@@ -27,11 +27,18 @@
  */
 import Reader from './utils/reader'
 import { setReader, resetReader } from './utils/dispatcher';
+import { isEffectSlot, EffectCleanupSlot, isEffectCleanupSlot } from './hooks/useEffect';
+import { isSyncEffectCleanupSlot } from './hooks/useSyncEffect';
+import { Callback } from './utils/types';
 
-export default function hooked<T extends any[], R>(callback: (...args: T) => R): (...args: T) => R {
+export interface HookedCallback<T extends any[], R> extends Callback<T, R> {
+  cleanup: () => void,
+}
+
+export default function hooked<T extends any[], R>(callback: Callback<T, R>): HookedCallback<T, R> {
   const reader = new Reader();
 
-  return function (...args: T): R {
+  function run(...args: T): R {
     setReader(reader);
     reader.resetCursor();
 
@@ -39,6 +46,41 @@ export default function hooked<T extends any[], R>(callback: (...args: T) => R):
 
     resetReader();
     reader.resetCursor();
+
+    reader.forEach((value, index) => {
+      if (value && isEffectSlot(value)) {
+        const newSlot: EffectCleanupSlot = {
+          type: 'EFFECT_CLEANUP',
+          value: value.value(),
+        }
+        reader.resetCursor();
+        reader.move(index);
+        reader.write(newSlot);
+      }
+    });
+    reader.resetCursor();
+
     return result;
   }
+
+  function wrapped(...args: T): R {
+    let result = run(...args);
+
+    while (reader.called) {
+      reader.endCall();
+      result = run(...args);
+    }
+
+    return result;
+  }
+
+  wrapped.cleanup = () => {
+    reader.forEach((value) => {
+      if (value && (isEffectCleanupSlot(value) || isSyncEffectCleanupSlot(value)) && value.value) {
+        value.value();
+      }
+    });
+  };
+
+  return wrapped;
 }
