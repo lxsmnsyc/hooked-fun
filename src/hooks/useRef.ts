@@ -25,20 +25,23 @@
  * @author Alexis Munsayac <alexis.munsayac@gmail.com>
  * @copyright Alexis Munsayac 2019
  */
-import useGuard, { Slot } from './useGuard';
+import useGuard from './useGuard';
 import { Optional } from '../utils/types';
 import { PayloadMismatchError } from '../utils/exceptions';
-
-type MUTABLE_REF = 'MUTABLE_REF';
+import { Slot } from '../utils/reader'
 
 export interface MutableRef<T> {
   current: T,
 }
 
-interface MutableRefSlot<T> extends Slot<MUTABLE_REF, MutableRef<T>>{
-}
+interface MutableRefSlot<T> extends Slot<'MUTABLE_REF', MutableRef<T>>{}
 
 const MEMORY_SIZE = 1;
+
+
+function isMutableRefSlot<T>(slot: Slot<any, any>): slot is MutableRefSlot<T> {
+  return slot.type === 'MUTABLE_REF';
+}
 
 export default function useRef<T>(initialValue: T): MutableRef<T> {
   return useGuard<MutableRef<T>>((reader) => {
@@ -48,7 +51,7 @@ export default function useRef<T>(initialValue: T): MutableRef<T> {
     // check if slot has a value
     if (slot) {
       // check if payload matches
-      if (slot.type !== 'MUTABLE_REF') {
+      if (!isMutableRefSlot<T>(slot)) {
         throw new PayloadMismatchError(slot.type, 'MUTABLE_REF');
       }
 
@@ -56,7 +59,7 @@ export default function useRef<T>(initialValue: T): MutableRef<T> {
       reader.move(MEMORY_SIZE);
 
       // return value
-      return (slot as MutableRefSlot<T>).value;
+      return slot.value;
     }
 
     // initialize slot
@@ -68,7 +71,7 @@ export default function useRef<T>(initialValue: T): MutableRef<T> {
     };
 
     // write to slot
-    reader.write(slot);
+    reader.write(ref);
 
     // move cursor
     reader.move(MEMORY_SIZE);
