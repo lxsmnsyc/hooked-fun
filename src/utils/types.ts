@@ -26,3 +26,4 @@
  * @copyright Alexis Munsayac 2019
  */
 export type Optional<T> = T | null | undefined;
+export type Callback<T extends any[], R> = (...args: T) => R;
