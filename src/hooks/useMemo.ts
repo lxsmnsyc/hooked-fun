@@ -25,19 +25,28 @@
  * @author Alexis Munsayac <alexis.munsayac@gmail.com>
  * @copyright Alexis Munsayac 2019
  */
-import useGuard, { Slot } from './useGuard';
+import useGuard from './useGuard';
 import { Optional } from '../utils/types';
 import { PayloadMismatchError } from '../utils/exceptions';
+import { Slot } from '../utils/reader';
 
 interface MemoSlot<T> extends Slot<'MEMO', T>{}
-interface MemoDependencySlot extends Slot<'MEMO_DEPENDENCY', any[]> {}
+interface MemoDependencySlot extends Slot<'MEMO_DEPENDENCY', Optional<any[]>> {}
 
 const MEMORY_SIZE = 2;
+
+function isMemoSlot<T>(slot: Slot<any, any>): slot is MemoSlot<T> {
+  return slot.type === 'MEMO';
+}
+
+function isMemoDependencySlot(slot: Slot<any, any>): slot is MemoDependencySlot {
+  return slot.type === 'MEMO_DEPENDENCY';
+}
 
 export default function useMemo<T>(callback: () => T, dependencies?: any[]): T {
   return useGuard<T>((reader) => {
     // get slots
-    const [result, deps] = reader.read(MEMORY_SIZE) as [Optional<Slot<any, any>>, Optional<Slot<any, any>>];
+    const [result, deps] = reader.read(MEMORY_SIZE) as Optional<Slot<any, any>>[];
 
     const compute = () => {
       const newResult: MemoSlot<T> = {
@@ -62,7 +71,7 @@ export default function useMemo<T>(callback: () => T, dependencies?: any[]): T {
     // check if result already exists
     if (result) {
       // check if payload matches
-      if (result.type !== 'MEMO') {
+      if (!isMemoSlot<T>(result)) {
         throw new PayloadMismatchError(result.type, 'MEMO');
       }
 
@@ -73,9 +82,14 @@ export default function useMemo<T>(callback: () => T, dependencies?: any[]): T {
 
       // check if there are new dependencies
       if (dependencies) {
-        if (deps.type !== 'MEMO_DEPENDENCY') {
+        if (!isMemoDependencySlot(deps)) {
           throw new PayloadMismatchError(deps.type, 'MEMO_DEPENDENCY');
         }
+
+        if (deps.value == null || dependencies == null) {
+          return compute();
+        }
+
         // check if size of dependencies changed
         if (deps.value.length !== dependencies.length) {
           return compute();
