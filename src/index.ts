@@ -29,5 +29,10 @@ import hooked from './hooked';
 
 export default hooked;
 
-export { default as useRef } from './hooks/useRef';
+export { default as useConstant } from './hooks/useConstant';
+export { default as useEffect } from './hooks/useEffect';
 export { default as useMemo } from './hooks/useMemo';
+export { default as usePrevious } from './hooks/usePrevious';
+export { default as useRef } from './hooks/useRef';
+export { default as useState } from './hooks/useState';
+export { default as useSyncEffect } from './hooks/useSyncEffect';
