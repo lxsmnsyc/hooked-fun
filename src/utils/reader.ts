@@ -25,18 +25,37 @@
  * @author Alexis Munsayac <alexis.munsayac@gmail.com>
  * @copyright Alexis Munsayac 2019
  */
+import { Optional } from './types';
+export interface Slot<P, T> {
+  type: P,
+  value: T,
+}
+
 export default class Reader {
-  private buffer: any[] = [];
+  private toCall: boolean = false;
+  private buffer: Optional<Slot<any, any>>[] = [];
   private cursor: number = 0;
 
   public read(size: number = 0) {
     return this.buffer.slice(this.cursor, this.cursor + size);
   }
 
-  public write(...values: any[]) {
+  public write(...values: Slot<any, any>[]) {
     for (let i = 0; i < values.length; i++) {
       this.buffer[this.cursor + i] = values[i]
     }
+  }
+
+  public readAt(index: number) {
+    return this.buffer[index];
+  }
+
+  public writeAt(index: number, slot: Optional<Slot<any, any>>) {
+    this.buffer[index] = slot;
+  }
+
+  public get position(): number {
+    return this.cursor;
   }
 
   public move(size: number = 1) {
@@ -52,7 +71,19 @@ export default class Reader {
     this.buffer = [];
   }
 
-  public forEach(callback: (value: any, index: number) => void) {
+  public forEach(callback: (value: Optional<Slot<any, any>>, index: number) => void) {
     this.buffer.forEach(callback);
+  }
+
+  public beginCall() {
+    this.toCall = true;
+  }
+
+  public endCall() {
+    this.toCall = false;
+  }
+
+  get called() {
+    return this.toCall;
   }
 }
