@@ -29,12 +29,6 @@ import { getReader, isActive } from '../utils/dispatcher';
 import { OutOfContextError, ReaderViolationError } from '../utils/exceptions';
 import Reader from '../utils/reader';
 
-export interface Slot<P, T> {
-  type: P,
-  value: T,
-}
-
-
 export default function useGuard<T>(callback: (reader: Reader) => T): T {
   // Check if the context is active
   if (isActive()) {
