@@ -1,11 +1,11 @@
 import hooked, { useTimeout } from '../src';
 
-const wrapped = hooked((message) => {
+const wrapped = hooked((message: string) => {
   useTimeout(() =>{
     console.log(message);
   
     return null;
-  }, 1000, [message]);
+  }, 1000,[message]);
 });
 
 wrapped('Hello');
