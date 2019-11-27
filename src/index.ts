@@ -29,9 +29,15 @@ import hooked from './hooked';
 
 export default hooked;
 
+export { default as useCleanup } from './hooks/useCleanup';
 export { default as useConstant } from './hooks/useConstant';
+export { default as useDebounce } from './hooks/useDebounce';
 export { default as useEffect } from './hooks/useEffect';
+export { default as useInitial } from './hooks/useInitial';
 export { default as useMemo } from './hooks/useMemo';
 export { default as usePrevious } from './hooks/usePrevious';
 export { default as useRef } from './hooks/useRef';
 export { default as useSyncEffect } from './hooks/useSyncEffect';
+export { default as useSyncInitial } from './hooks/useSyncInitial';
+export { default as useThrottle } from './hooks/useThrottle';
+export { default as useTimeout } from './hooks/useTimeout';
