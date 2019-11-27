@@ -51,6 +51,12 @@ function isEffectDependencySlot(slot: Slot<any, any>): slot is EffectDependencyS
   return slot.type === 'EFFECT_DEPENDENCY';
 }
 
+/**
+ * Executes callback after the hooked function is called. Re-executes whenever
+ * the dependencies change.
+ * @param callback 
+ * @param dependencies 
+ */
 export default function useEffect(callback: EffectCallback, dependencies?: any[]) {
   return useGuard((reader) => {
     // get slots
