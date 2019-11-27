@@ -30,6 +30,8 @@ import { Optional } from '../utils/types';
 import { PayloadMismatchError } from '../utils/exceptions';
 import { Slot } from '../utils/reader';
 
+export type MemoCallback<R> = () => R;
+
 interface MemoSlot<T> extends Slot<'MEMO', T>{}
 interface MemoDependencySlot extends Slot<'MEMO_DEPENDENCY', Optional<any[]>> {}
 
@@ -43,7 +45,14 @@ function isMemoDependencySlot(slot: Slot<any, any>): slot is MemoDependencySlot 
   return slot.type === 'MEMO_DEPENDENCY';
 }
 
-export default function useMemo<T>(callback: () => T, dependencies?: any[]): T {
+/**
+ * A hook that executes the given callback and receives its value. The value is kept
+ * until dependencies are changed, in which the given callback is called again to provide
+ * the new value.
+ * @param callback 
+ * @param dependencies 
+ */
+export default function useMemo<T>(callback: MemoCallback<T>, dependencies?: any[]): T {
   return useGuard<T>((reader) => {
     // get slots
     const [result, deps] = reader.read(MEMORY_SIZE) as Optional<Slot<any, any>>[];
