@@ -1,26 +1,16 @@
-import hooked, { useState } from '../src';
+import hooked, { useEffect } from '../src';
 
-const wrappedEx = hooked(() => {
-  const [count, setCount] = useState(0);
+function effectExample(message: string) {
+  console.log(message);
 
-  if (count < 100) {
-    setCount(count + 1);
-  }
+  return null;
+}
 
-  return count;
+const wrapped = hooked((message: string) => {
+  useEffect(effectExample, [message]);
 });
 
-const wrapped = hooked(() => {
-  const [count, setCount] = useState(0);
-
-  if (count < 100) {
-    setCount(count + 1);
-  }
-
-  return [count, wrappedEx()];
-});
-
-console.log(wrapped());
-console.log(wrapped());
-console.log(wrapped());
-console.log(wrapped());
+wrapped('Hello');
+wrapped('Hello World');
+wrapped('Hello');
+wrapped('Hello');
