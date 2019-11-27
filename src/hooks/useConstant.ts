@@ -40,6 +40,11 @@ function isConstantSlot<T>(slot: Slot<any, any>): slot is ConstantSlot<T> {
   return slot.type === 'CONSTANT';
 }
 
+/**
+ * A hook which receives a value from a supplier function that
+ * persists until the hooked function's `cleanup` gets called.
+ * @param supplier 
+ */
 export default function useConstant<T>(supplier: () => T): T {
   return useGuard<T>((reader) => {
     // read at the current position
