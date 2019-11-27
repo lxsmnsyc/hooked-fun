@@ -32,7 +32,6 @@ export interface Slot<P, T> {
 }
 
 export default class Reader {
-  private toCall: boolean = false;
   private buffer: Optional<Slot<any, any>>[] = [];
   private cursor: number = 0;
 
@@ -73,17 +72,5 @@ export default class Reader {
 
   public forEach(callback: (value: Optional<Slot<any, any>>, index: number) => void) {
     this.buffer.forEach(callback);
-  }
-
-  public beginCall() {
-    this.toCall = true;
-  }
-
-  public endCall() {
-    this.toCall = false;
-  }
-
-  get called() {
-    return this.toCall;
   }
 }
