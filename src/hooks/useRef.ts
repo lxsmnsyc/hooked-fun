@@ -43,6 +43,11 @@ function isMutableRefSlot<T>(slot: Slot<any, any>): slot is MutableRefSlot<T> {
   return slot.type === 'MUTABLE_REF';
 }
 
+/**
+ * A hook which creates a mutable reference object that persists until
+ * the cleanup method is called.
+ * @param initialValue
+ */
 export default function useRef<T>(initialValue: T): MutableRef<T> {
   return useGuard<MutableRef<T>>((reader) => {
     // read at the current position
