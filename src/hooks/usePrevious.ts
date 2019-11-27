@@ -39,6 +39,10 @@ function isPreviousSlot<T>(slot: Slot<any, any>): slot is PreviousSlot<T> {
   return slot.type === 'PREVIOUS';
 }
 
+/**
+ * A hook which retains the value from the previous call.
+ * @param value
+ */
 export default function usePrevious<T>(value: T): Optional<T> {
   return useGuard<Optional<T>>((reader) => {
     // read at the current position
