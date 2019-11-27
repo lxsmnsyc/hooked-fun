@@ -1,13 +1,11 @@
-import hooked, { useEffect } from '../src';
+import hooked, { useTimeout } from '../src';
 
-function effectExample(message: string) {
-  console.log(message);
-
-  return null;
-}
-
-const wrapped = hooked((message: string) => {
-  useEffect(effectExample, [message]);
+const wrapped = hooked((message) => {
+  useTimeout(() =>{
+    console.log(message);
+  
+    return null;
+  }, 1000, [message]);
 });
 
 wrapped('Hello');
