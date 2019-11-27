@@ -38,38 +38,26 @@ export interface HookedCallback<T extends any[], R> extends Callback<T, R> {
 export default function hooked<T extends any[], R>(callback: Callback<T, R>): HookedCallback<T, R> {
   const reader = new Reader();
 
-  function run(...args: T): R {
+  function wrapped<B>(this: B, ...args: T): R {
     setReader(reader);
     reader.resetCursor();
 
-    const result = callback(...args);
+    const result = callback.apply<B, T, R>(this, args);
 
     resetReader();
     reader.resetCursor();
 
     reader.forEach((value, index) => {
       if (value && isEffectSlot(value)) {
+        const deps = reader.readAt(index + 1);
         const newSlot: EffectCleanupSlot = {
           type: 'EFFECT_CLEANUP',
-          value: value.value(),
+          value: value.value.apply(null, deps?.value),
         }
-        reader.resetCursor();
-        reader.move(index);
-        reader.write(newSlot);
+        reader.writeAt(index, newSlot);
       }
     });
     reader.resetCursor();
-
-    return result;
-  }
-
-  function wrapped(...args: T): R {
-    let result = run(...args);
-
-    while (reader.called) {
-      reader.endCall();
-      result = run(...args);
-    }
 
     return result;
   }
@@ -80,6 +68,7 @@ export default function hooked<T extends any[], R>(callback: Callback<T, R>): Ho
         value.value();
       }
     });
+    reader.reset();
   };
 
   return wrapped;
