@@ -49,10 +49,9 @@ export default function hooked<T extends any[], R>(callback: Callback<T, R>): Ho
 
     reader.forEach((value, index) => {
       if (value && isEffectSlot(value)) {
-        const deps = reader.readAt(index + 1);
         const newSlot: EffectCleanupSlot = {
           type: 'EFFECT_CLEANUP',
-          value: value.value.apply(null, deps?.value),
+          value: value.value(),
         }
         reader.writeAt(index, newSlot);
       }
