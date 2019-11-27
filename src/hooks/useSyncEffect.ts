@@ -46,6 +46,11 @@ function isSyncEffectDependencySlot(slot: Slot<any, any>): slot is SyncEffectDep
   return slot.type === 'SYNC_EFFECT_DEPENDENCY';
 }
 
+/**
+ * Similar to `useEffect` except that the callback is called synchronously.
+ * @param callback 
+ * @param dependencies 
+ */
 export default function useSyncEffect(callback: SyncEffectCallback, dependencies?: any[]) {
   return useGuard((reader) => {
     // get slots
