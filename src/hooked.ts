@@ -2,7 +2,7 @@
  * @license
  * MIT License
  *
- * Copyright (c) 2019 Alexis Munsayac
+ * Copyright (c) 2020 Alexis Munsayac
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -23,16 +23,16 @@
  *
  *
  * @author Alexis Munsayac <alexis.munsayac@gmail.com>
- * @copyright Alexis Munsayac 2019
+ * @copyright Alexis Munsayac 2020
  */
-import Reader from './utils/reader'
+import Reader from './utils/reader';
 import { setReader, resetReader } from './utils/dispatcher';
 import { isEffectSlot, EffectCleanupSlot, isEffectCleanupSlot } from './hooks/useEffect';
 import { isSyncEffectCleanupSlot } from './hooks/useSyncEffect';
 import { Callback } from './utils/types';
 
 export interface HookedCallback<T extends any[], R> extends Callback<T, R> {
-  cleanup: () => void,
+  cleanup: () => void;
 }
 
 export default function hooked<T extends any[], R>(callback: Callback<T, R>): HookedCallback<T, R> {
@@ -52,7 +52,7 @@ export default function hooked<T extends any[], R>(callback: Callback<T, R>): Ho
         const newSlot: EffectCleanupSlot = {
           type: 'EFFECT_CLEANUP',
           value: value.value(),
-        }
+        };
         reader.writeAt(index, newSlot);
       }
     });
@@ -61,7 +61,7 @@ export default function hooked<T extends any[], R>(callback: Callback<T, R>): Ho
     return result;
   }
 
-  wrapped.cleanup = () => {
+  wrapped.cleanup = (): void => {
     reader.forEach((value) => {
       if (value && (isEffectCleanupSlot(value) || isSyncEffectCleanupSlot(value)) && value.value) {
         value.value();

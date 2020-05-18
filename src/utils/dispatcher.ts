@@ -2,7 +2,7 @@
  * @license
  * MIT License
  *
- * Copyright (c) 2019 Alexis Munsayac
+ * Copyright (c) 2020 Alexis Munsayac
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -23,14 +23,14 @@
  *
  *
  * @author Alexis Munsayac <alexis.munsayac@gmail.com>
- * @copyright Alexis Munsayac 2019
+ * @copyright Alexis Munsayac 2020
  */
 import Reader from './reader';
 
 interface CurrentDispatcher {
-  stack: Reader[],
-  active: boolean,
-  value?: Reader,
+  stack: Reader[];
+  active: boolean;
+  value?: Reader;
 }
 
 const CURRENT: CurrentDispatcher = {
@@ -39,21 +39,21 @@ const CURRENT: CurrentDispatcher = {
 };
 
 
-export function setReader(reader: Reader) {
+export function setReader(reader: Reader): void {
   CURRENT.stack.push(reader);
   CURRENT.active = true;
   CURRENT.value = reader;
 }
 
-export function resetReader() {
+export function resetReader(): void {
   CURRENT.value = CURRENT.stack.pop();
   CURRENT.active = CURRENT.stack.length > 0;
 }
 
-export function getReader() {
+export function getReader(): Reader | undefined {
   return CURRENT.value;
 }
 
-export function isActive() {
+export function isActive(): boolean {
   return CURRENT.active;
 }

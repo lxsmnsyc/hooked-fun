@@ -2,7 +2,7 @@
  * @license
  * MIT License
  *
- * Copyright (c) 2019 Alexis Munsayac
+ * Copyright (c) 2020 Alexis Munsayac
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -23,17 +23,17 @@
  *
  *
  * @author Alexis Munsayac <alexis.munsayac@gmail.com>
- * @copyright Alexis Munsayac 2019
+ * @copyright Alexis Munsayac 2020
  */
 import useGuard from './useGuard';
 import { Optional } from '../utils/types';
-import { PayloadMismatchError } from '../utils/exceptions';
+import PayloadMismatchError from '../utils/exceptions/PayloadMismatchError';
 import { Slot } from '../utils/reader';
 
 export type MemoCallback<R> = () => R;
 
-interface MemoSlot<T> extends Slot<'MEMO', T>{}
-interface MemoDependencySlot extends Slot<'MEMO_DEPENDENCY', Optional<any[]>> {}
+type MemoSlot<T> = Slot<'MEMO', T>;
+type MemoDependencySlot = Slot<'MEMO_DEPENDENCY', Optional<any[]>>;
 
 const MEMORY_SIZE = 2;
 
@@ -49,15 +49,15 @@ function isMemoDependencySlot(slot: Slot<any, any>): slot is MemoDependencySlot 
  * A hook that executes the given callback and receives its value. The value is kept
  * until dependencies are changed, in which the given callback is called again to provide
  * the new value.
- * @param callback 
- * @param dependencies 
+ * @param callback
+ * @param dependencies
  */
 export default function useMemo<T>(callback: MemoCallback<T>, dependencies?: any[]): T {
   return useGuard<T>((reader) => {
     // get slots
-    const [result, deps] = reader.read(MEMORY_SIZE) as Optional<Slot<any, any>>[];
+    const [result, deps] = reader.read(MEMORY_SIZE);
 
-    const compute = () => {
+    const compute = (): T => {
       const newResult: MemoSlot<T> = {
         type: 'MEMO',
         value: callback(),
@@ -105,7 +105,7 @@ export default function useMemo<T>(callback: MemoCallback<T>, dependencies?: any
         }
 
         // check if one of the dependencies changed
-        for (let i = 0; i < deps.value.length; i++) {
+        for (let i = 0; i < deps.value.length; i += 1) {
           if (!Object.is(deps.value[i], dependencies[i])) {
             return compute();
           }

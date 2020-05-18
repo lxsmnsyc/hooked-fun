@@ -2,7 +2,7 @@
  * @license
  * MIT License
  *
- * Copyright (c) 2019 Alexis Munsayac
+ * Copyright (c) 2020 Alexis Munsayac
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -23,18 +23,13 @@
  *
  *
  * @author Alexis Munsayac <alexis.munsayac@gmail.com>
- * @copyright Alexis Munsayac 2019
+ * @copyright Alexis Munsayac 2020
  */
-import useSyncEffect from './useSyncEffect';
-
-export type IntervalCallback = () => void;
-
-export default function useInterval(callback: IntervalCallback, timeout: number, dependencies: any[] = []) {
-  useSyncEffect(() => {
-    const timeID = setInterval(callback, timeout);
-
-    return () => {
-      clearInterval(timeID);
-    };
-  }, [timeout, ...dependencies]);
+export default class PayloadMismatchError extends Error {
+  constructor(current: string, expected: string) {
+    super(`
+      Memory slot for the current hook mismatched (current: ${current}, expected: ${expected});
+      Hooks must be called on top-level and must not be called inside branching code.
+    `);
+  }
 }

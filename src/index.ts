@@ -2,7 +2,7 @@
  * @license
  * MIT License
  *
- * Copyright (c) 2019 Alexis Munsayac
+ * Copyright (c) 2020 Alexis Munsayac
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -23,7 +23,7 @@
  *
  *
  * @author Alexis Munsayac <alexis.munsayac@gmail.com>
- * @copyright Alexis Munsayac 2019
+ * @copyright Alexis Munsayac 2020
  */
 import hooked from './hooked';
 
@@ -31,13 +31,8 @@ export default hooked;
 
 export { default as useCleanup } from './hooks/useCleanup';
 export { default as useConstant } from './hooks/useConstant';
-export { default as useDebounce } from './hooks/useDebounce';
 export { default as useEffect } from './hooks/useEffect';
-export { default as useInitial } from './hooks/useInitial';
 export { default as useMemo } from './hooks/useMemo';
 export { default as usePrevious } from './hooks/usePrevious';
 export { default as useRef } from './hooks/useRef';
 export { default as useSyncEffect } from './hooks/useSyncEffect';
-export { default as useSyncInitial } from './hooks/useSyncInitial';
-export { default as useThrottle } from './hooks/useThrottle';
-export { default as useTimeout } from './hooks/useTimeout';

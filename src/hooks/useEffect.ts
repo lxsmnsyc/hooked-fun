@@ -2,7 +2,7 @@
  * @license
  * MIT License
  *
- * Copyright (c) 2019 Alexis Munsayac
+ * Copyright (c) 2020 Alexis Munsayac
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -23,19 +23,19 @@
  *
  *
  * @author Alexis Munsayac <alexis.munsayac@gmail.com>
- * @copyright Alexis Munsayac 2019
+ * @copyright Alexis Munsayac 2020
  */
 import useGuard from './useGuard';
 import { Optional } from '../utils/types';
-import { PayloadMismatchError } from '../utils/exceptions';
+import PayloadMismatchError from '../utils/exceptions/PayloadMismatchError';
 import { Slot } from '../utils/reader';
 
-export type EffectCleanup = Optional<() => void>;
+export type EffectCleanup = void | Optional<() => void>;
 export type EffectCallback = () => EffectCleanup;
 
-export interface EffectSlot extends Slot<'EFFECT', EffectCallback>{}
-export interface EffectCleanupSlot extends Slot<'EFFECT_CLEANUP', EffectCleanup>{}
-export interface EffectDependencySlot extends Slot<'EFFECT_DEPENDENCY', any[]> {}
+export type EffectSlot = Slot<'EFFECT', EffectCallback>;
+export type EffectCleanupSlot = Slot<'EFFECT_CLEANUP', EffectCleanup>;
+export type EffectDependencySlot = Slot<'EFFECT_DEPENDENCY', any[]>;
 
 const MEMORY_SIZE = 2;
 
@@ -54,15 +54,15 @@ function isEffectDependencySlot(slot: Slot<any, any>): slot is EffectDependencyS
 /**
  * Executes callback after the hooked function is called. Re-executes whenever
  * the dependencies change.
- * @param callback 
- * @param dependencies 
+ * @param callback
+ * @param dependencies
  */
-export default function useEffect(callback: EffectCallback, dependencies?: any[]) {
+export default function useEffect(callback: EffectCallback, dependencies?: any[]): void {
   return useGuard((reader) => {
     // get slots
-    const [result, deps] = reader.read(MEMORY_SIZE) as Optional<Slot<any, any>>[];
+    const [result, deps] = reader.read(MEMORY_SIZE);
 
-    const compute = () => {
+    const compute = (): void => {
       if (result && isEffectCleanupSlot(result) && result.value) {
         result.value();
       }
@@ -93,7 +93,8 @@ export default function useEffect(callback: EffectCallback, dependencies?: any[]
 
       // check if old dependencies is null
       if (deps == null) {
-        return compute();
+        compute();
+        return;
       }
 
       // check if there are new dependencies
@@ -103,22 +104,26 @@ export default function useEffect(callback: EffectCallback, dependencies?: any[]
         }
 
         if (deps.value == null || dependencies == null) {
-          return compute();
+          compute();
+          return;
         }
 
         // check if size of dependencies changed
         if (deps.value.length !== dependencies.length) {
-          return compute();
+          compute();
+          return;
         }
 
         // check if one of the dependencies changed
-        for (let i = 0; i < deps.value.length; i++) {
+        for (let i = 0; i < deps.value.length; i += 1) {
           if (!Object.is(deps.value[i], dependencies[i])) {
-            return compute();
+            compute();
+            return;
           }
         }
       } else {
-        return compute();
+        compute();
+        return;
       }
 
       // move cursor

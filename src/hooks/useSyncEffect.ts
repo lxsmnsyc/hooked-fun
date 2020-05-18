@@ -2,7 +2,7 @@
  * @license
  * MIT License
  *
- * Copyright (c) 2019 Alexis Munsayac
+ * Copyright (c) 2020 Alexis Munsayac
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -23,18 +23,18 @@
  *
  *
  * @author Alexis Munsayac <alexis.munsayac@gmail.com>
- * @copyright Alexis Munsayac 2019
+ * @copyright Alexis Munsayac 2020
  */
 import useGuard from './useGuard';
 import { Optional } from '../utils/types';
-import { PayloadMismatchError } from '../utils/exceptions';
+import PayloadMismatchError from '../utils/exceptions/PayloadMismatchError';
 import { Slot } from '../utils/reader';
 
-export type SyncEffectCleanup = Optional<() => void>;
+export type SyncEffectCleanup = void | Optional<() => void>;
 export type SyncEffectCallback = () => SyncEffectCleanup;
 
-export interface SyncEffectCleanupSlot extends Slot<'SYNC_EFFECT_CLEANUP', SyncEffectCleanup>{}
-export interface SyncEffectDependencySlot extends Slot<'SYNC_EFFECT_DEPENDENCY', any[]> {}
+export type SyncEffectCleanupSlot = Slot<'SYNC_EFFECT_CLEANUP', SyncEffectCleanup>;
+export type SyncEffectDependencySlot = Slot<'SYNC_EFFECT_DEPENDENCY', any[]>;
 
 const MEMORY_SIZE = 2;
 
@@ -48,15 +48,15 @@ function isSyncEffectDependencySlot(slot: Slot<any, any>): slot is SyncEffectDep
 
 /**
  * Similar to `useEffect` except that the callback is called synchronously.
- * @param callback 
- * @param dependencies 
+ * @param callback
+ * @param dependencies
  */
-export default function useSyncEffect(callback: SyncEffectCallback, dependencies?: any[]) {
+export default function useSyncEffect(callback: SyncEffectCallback, dependencies?: any[]): void {
   return useGuard((reader) => {
     // get slots
-    const [result, deps] = reader.read(MEMORY_SIZE) as [Optional<Slot<any, any>>, Optional<Slot<any, any>>];
+    const [result, deps] = reader.read(MEMORY_SIZE);
 
-    const compute = () => {
+    const compute = (): void => {
       if (result && isSyncEffectCleanupSlot(result) && result.value) {
         result.value();
       }
@@ -87,7 +87,8 @@ export default function useSyncEffect(callback: SyncEffectCallback, dependencies
 
       // check if old dependencies is null
       if (deps == null) {
-        return compute();
+        compute();
+        return;
       }
 
       // check if there are new dependencies
@@ -97,22 +98,26 @@ export default function useSyncEffect(callback: SyncEffectCallback, dependencies
         }
 
         if (deps.value == null || dependencies == null) {
-          return compute();
+          compute();
+          return;
         }
 
         // check if size of dependencies changed
         if (deps.value.length !== dependencies.length) {
-          return compute();
+          compute();
+          return;
         }
 
         // check if one of the dependencies changed
-        for (let i = 0; i < deps.value.length; i++) {
+        for (let i = 0; i < deps.value.length; i += 1) {
           if (!Object.is(deps.value[i], dependencies[i])) {
-            return compute();
+            compute();
+            return;
           }
         }
       } else {
-        return compute();
+        compute();
+        return;
       }
 
       // move cursor

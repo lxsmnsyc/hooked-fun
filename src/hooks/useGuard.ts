@@ -2,7 +2,7 @@
  * @license
  * MIT License
  *
- * Copyright (c) 2019 Alexis Munsayac
+ * Copyright (c) 2020 Alexis Munsayac
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -23,11 +23,12 @@
  *
  *
  * @author Alexis Munsayac <alexis.munsayac@gmail.com>
- * @copyright Alexis Munsayac 2019
+ * @copyright Alexis Munsayac 2020
  */
 import { getReader, isActive } from '../utils/dispatcher';
-import { OutOfContextError, ReaderViolationError } from '../utils/exceptions';
 import Reader from '../utils/reader';
+import OutOfContextError from '../utils/exceptions/OutOfContextError';
+import ReaderViolationError from '../utils/exceptions/ReaderViolationError';
 
 export default function useGuard<T>(callback: (reader: Reader) => T): T {
   // Check if the context is active
@@ -38,9 +39,8 @@ export default function useGuard<T>(callback: (reader: Reader) => T): T {
     // check if reader exists
     if (reader) {
       return callback(reader);
-    } else {
-      throw new ReaderViolationError();
     }
+    throw new ReaderViolationError();
   } else {
     throw new OutOfContextError();
   }

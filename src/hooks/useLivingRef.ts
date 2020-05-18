@@ -2,7 +2,7 @@
  * @license
  * MIT License
  *
- * Copyright (c) 2019 Alexis Munsayac
+ * Copyright (c) 2020 Alexis Munsayac
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -23,21 +23,21 @@
  *
  *
  * @author Alexis Munsayac <alexis.munsayac@gmail.com>
- * @copyright Alexis Munsayac 2019
+ * @copyright Alexis Munsayac 2020
  */
-import useEffect from './useEffect';
+import useRef, { MutableRef } from './useRef';
+import useSyncEffect from './useSyncEffect';
 
-export type InitialCallback = () => void;
+export default function useLivingRef(): MutableRef<boolean> {
+  const ref = useRef(false);
 
-/**
- * A hook that receives a callback which is only called once after
- * the hooked function is called.
- * @param callback 
- */
-export default function useInitial(callback: InitialCallback) {
-  useEffect(() => {
-    callback();
+  useSyncEffect(() => {
+    ref.current = true;
 
-    return null;
+    return (): void => {
+      ref.current = false;
+    };
   }, []);
+
+  return ref;
 }

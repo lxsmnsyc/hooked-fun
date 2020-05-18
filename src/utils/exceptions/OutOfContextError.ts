@@ -2,7 +2,7 @@
  * @license
  * MIT License
  *
- * Copyright (c) 2019 Alexis Munsayac
+ * Copyright (c) 2020 Alexis Munsayac
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -23,20 +23,10 @@
  *
  *
  * @author Alexis Munsayac <alexis.munsayac@gmail.com>
- * @copyright Alexis Munsayac 2019
+ * @copyright Alexis Munsayac 2020
  */
-import useSyncEffect from './useSyncEffect';
-
-export type SyncInitialCallback = () => void;
-
-/**
- * similar to `useInitial` except the callback is called synchronously.
- * @param callback 
- */
-export default function useSyncInitial(callback: SyncInitialCallback) {
-  useSyncEffect(() => {
-    callback();
-
-    return null;
-  }, []);
+export default class OutOfContextError extends Error {
+  constructor() {
+    super('Hooked function called out of context');
+  }
 }

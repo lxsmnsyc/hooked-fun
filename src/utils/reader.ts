@@ -2,7 +2,7 @@
  * @license
  * MIT License
  *
- * Copyright (c) 2019 Alexis Munsayac
+ * Copyright (c) 2020 Alexis Munsayac
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -23,33 +23,35 @@
  *
  *
  * @author Alexis Munsayac <alexis.munsayac@gmail.com>
- * @copyright Alexis Munsayac 2019
+ * @copyright Alexis Munsayac 2020
  */
 import { Optional } from './types';
+
 export interface Slot<P, T> {
-  type: P,
-  value: T,
+  type: P;
+  value: T;
 }
 
 export default class Reader {
   private buffer: Optional<Slot<any, any>>[] = [];
-  private cursor: number = 0;
 
-  public read(size: number = 0) {
+  private cursor = 0;
+
+  public read(size = 0): Optional<Slot<any, any>>[] {
     return this.buffer.slice(this.cursor, this.cursor + size);
   }
 
-  public write(...values: Slot<any, any>[]) {
-    for (let i = 0; i < values.length; i++) {
-      this.buffer[this.cursor + i] = values[i]
+  public write(...values: Slot<any, any>[]): void {
+    for (let i = 0; i < values.length; i += 1) {
+      this.buffer[this.cursor + i] = values[i];
     }
   }
 
-  public readAt(index: number) {
+  public readAt(index: number): Optional<Slot<any, any>> {
     return this.buffer[index];
   }
 
-  public writeAt(index: number, slot: Optional<Slot<any, any>>) {
+  public writeAt(index: number, slot: Optional<Slot<any, any>>): void {
     this.buffer[index] = slot;
   }
 
@@ -57,20 +59,20 @@ export default class Reader {
     return this.cursor;
   }
 
-  public move(size: number = 1) {
+  public move(size = 1): void {
     this.cursor += size;
   }
 
-  public resetCursor() {
+  public resetCursor(): void {
     this.cursor = 0;
   }
 
-  public reset() {
+  public reset(): void {
     this.cursor = 0;
     this.buffer = [];
   }
 
-  public forEach(callback: (value: Optional<Slot<any, any>>, index: number) => void) {
+  public forEach(callback: (value: Optional<Slot<any, any>>, index: number) => void): void {
     this.buffer.forEach(callback);
   }
 }

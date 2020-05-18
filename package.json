@@ -12,7 +12,8 @@
   "scripts": {
     "start": "tsdx watch",
     "build": "tsdx build",
-    "test": "tsdx test"
+    "test": "tsdx test",
+    "lint": "eslint \"./src/**/*.ts\""
   },
   "peerDependencies": {},
   "devDependencies": {
@@ -21,6 +22,9 @@
     "@typescript-eslint/parser": "^2.8.0",
     "eslint": "^6.7.1",
     "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-import-resolver-node": "^0.3.2",
+    "eslint-import-resolver-typescript": "^2.0.0",
+    "eslint-plugin-import": "latest",
     "tsdx": "^0.11.0",
     "tslib": "^1.10.0",
     "typescript": "^3.7.2"
